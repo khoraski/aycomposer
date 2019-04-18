@@ -1,0 +1,836 @@
+<head>
+	<style>
+		option {
+			font:12px Courier; 
+		}
+		select {
+			font:12px Courier; 
+		}
+	</style>
+</head>
+<body style="background-color:black;color:white;">
+<table border=1>
+	<tr>
+		<td id="tabData" colspan="2"></td>
+	</tr>
+	<tr>
+		<td colspan="2" >
+			<input id="scrollBar" style="width:100%" 
+				type="range" min="0" max="458" value="0" />
+		</td>
+	</tr>
+	<tr>
+		<td id="canvasData"></td>
+		
+		<td>
+			<center>
+				<p>Envelope Speed</p>
+				<input id="envelopeSpeed" style="width:100%" 
+					type="number" min="0" max="10000" value="100" />
+				<p>Envelope Type</p>
+				<!--<input id="envelopeType" style="width:100%"
+					type="number" min="0" max="9" value="5" />-->
+				<select>
+					<option value=" 0">\__________</option>
+					<option value=" 4">/|_________</option>
+					<option value=" 8">\|\|\|\|\|\</option>
+					<option value="10">\/\/\/\/\/\</option>
+					<option value="11">\|‾‾‾‾‾‾‾‾‾</option>
+					<option value="12">/|/|/|/|/|/</option>
+					<option value="13">/‾‾‾‾‾‾‾‾‾‾</option>
+					<option value="14">/\/\/\/\/\/</option>
+				</select>
+				<p>Envelope Channel</p>
+				<input type="checkbox" />
+				<label>A</label>
+				<input type="checkbox" />
+				<label>B</label>
+				<input type="checkbox" />
+				<label>C</label>
+				<br>
+				
+				<p>Noise Channel</p>
+				<input type="checkbox" id="noiseA" />
+				<label>A</label>
+				<input type="checkbox" id="noiseB" />
+				<label>B</label>
+				<input type="checkbox" id="noiseC" />
+				<label>C</label>
+			</center>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<table style="width:100%">
+				<tr>
+					<td colspan="3">
+						<p>Timing</p>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<center>
+							<p>t<sub>0</sub></p>
+						</center>
+					</td>
+					<td>
+						<center>
+							<p>t<sub>1</sub></p>
+						</center>
+					</td>
+					<td>
+						<center>
+							<p>t<sub>2</sub></p>
+						</center>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<input id="t0" style="width:100%" 
+							type="range" min="0" max="100" value="50" />
+					</td>
+					<td>
+						<input id="t1" style="width:100%" 
+							type="range" min="0" max="100" value="40" 
+							disabled />
+					</td>
+					<td>
+						<input id="t2" style="width:100%" 
+							type="range" min="0" max="100" value="10" />
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<center>
+							<p id="pt0">50</p>
+						</center>
+					</td>
+					<td>
+						<center>
+							<p id="pt1">40</p>
+						</center>
+					</td>
+					<td>
+						<center>
+							<p id="pt2">10</p>
+						</center>
+					</td>
+				</tr>
+			</table>
+		</td>
+		<td>
+			<p>Time (Milliseconds)</p>
+			<input id="time" style="width:100%"
+				type="number" min="10" max="2500" value="100" />
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3">
+			<p>Volume</p>
+			<table style="width:100%">
+				<tr>
+					<td>
+						<center>
+							<p>Channel A</p>
+						</center>
+					</td>
+					<td>
+						<center>
+							<p>Channel B</p>
+						</center>
+					</td>
+					<td>
+						<center>
+							<p>Channel C</p>
+						</center>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<input id="volA" style="width:100%" 
+							type="range" min="0" max="15" value="15" />
+					</td>
+					<td>
+						<input id="volB" style="width:100%" 
+							type="range" min="0" max="15" value="15" />
+					</td>
+					<td>
+						<input id="volC" style="width:100%" 
+							type="range" min="0" max="15" value="15" />
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+</table>
+<script>
+const FREQUENCIES = [32.70,34.65,36.71,38.89,41.20,43.65,46.25,49.00,51.91,55.00,58.27,61.74,65.41,69.30,73.42,77.78,82.41,87.31,92.50,98.00,103.83,110.00,116.54,123.47,130.81,138.59,146.83,155.56,164.81,174.61,185.00,196.00,207.65,220.00,233.08,246.94,261.63,277.18,293.66,311.13,329.63,349.23,369.99,392.00,415.30,440.00,466.16,493.88,523.25,554.37,587.33,622.25,659.25,698.46,739.99,783.99,830.61,880.00,932.33,987.77,1046.50,1108.73,1174.66,1244.51,1318.51,1396.91,1479.98,1567.98,1661.22,1760.00,1864.66,1975.53,2093.00,2217.46,2349.32,2489.02,2637.02,2793.83,2959.96,3135.96,3322.44,3520.00,3729.31,3951.07,4186.01,4434.92,4698.63,4978.03,5274.04,5587.65,5919.91,6271.93,6644.88,7040.00,7458.62,7902.13];
+
+const SIZE = 12;
+const NOTES = 512;
+var BEATS = 250;
+var tabs = new Array(4);
+var BGCOLOR = "black";
+var FGCOLOR = "white";
+
+var groupNames = ["Channel A", "Channel B", "Channel C", "Noise"];
+var composerGroups = new Array(3);
+composerGroups[0] = [0, 1, 2];
+composerGroups[1] = [3, 4, 5];
+composerGroups[2] = [6, 7, 8];
+composerGroups[3] = [9, 10];
+var tabWidth = 100 / Math.floor(tabs.length + 4);
+
+for (var i = 0; i < tabs.length; i++) {
+	tabs[i] = document.createElement("button");
+	tabs[i].innerHTML = groupNames[i];
+	tabs[i].value = i;
+	tabs[i].onclick = function() {
+		for (var j = 0; j < tabs.length; j++)
+			tabs[j].style.backgroundColor = "";
+		this.style.backgroundColor = "yellow";
+		var v = parseInt(this.value);
+		for (var j = 0; j < composers.length; j++) {
+			composers[j].visible = false;
+		}
+		for (var j = 0; j < composerGroups[v].length; j++) {
+			composers[composerGroups[v][j]].visible = true;
+		}
+	}
+	tabs[i].style.width = tabWidth + "%";
+	document.getElementById("tabData").appendChild(tabs[i]);
+}
+
+var btnNew = document.createElement("button");
+btnNew.innerHTML = "New";
+btnNew.style.width = tabWidth + "%";
+document.getElementById("tabData").appendChild(btnNew);
+
+var btnSave = document.createElement("button");
+btnSave.innerHTML = "Save";
+btnSave.style.width = tabWidth + "%";
+document.getElementById("tabData").appendChild(btnSave);
+
+var btnLoad = document.createElement("button");
+btnLoad.innerHTML = "Load";
+btnLoad.style.width = tabWidth + "%";
+document.getElementById("tabData").appendChild(btnLoad);
+
+var btnExport = document.createElement("button");
+btnExport.innerHTML = "Export";
+btnExport.style.width = tabWidth + "%";
+document.getElementById("tabData").appendChild(btnExport);
+
+
+
+
+var canvas = document.createElement("canvas");
+var grafx = canvas.getContext("2d");
+var mouse = new Array(0);
+var keyboard = new Array(256);
+var tabIndex = 0;
+mouse.x = 0;
+mouse.y = 0;
+keyboard.fill(false);
+mouse.isDown = false;
+canvas.width = 640;
+canvas.height = 400;
+document.getElementById("canvasData").appendChild(canvas);
+
+function playTone(seconds, volume, tone) {
+	window.AudioContext = window.AudioContext || window.webkitAudioContext;
+	var context = new AudioContext();
+	var arr = [];
+	var sampleFreq = context.sampleRate / tone;
+	for (var i = 0; i < context.sampleRate * seconds; i++) {
+		arr[i] = Math.sin(i / (sampleFreq / (Math.PI*2))) >= 0 ? 0 : volume;
+	}
+    var buf = new Float32Array(arr.length);
+    for (var i = 0; i < arr.length; i++) buf[i] = arr[i]
+    var buffer = context.createBuffer(1, buf.length, context.sampleRate)
+    buffer.copyToChannel(buf, 0)
+    var source = context.createBufferSource();
+    source.buffer = buffer;
+    source.connect(context.destination);
+    source.start(0);
+}
+
+function Composer(name, x, y, width, depth, bottomIsZero, customHighlight) {
+	var fs = (SIZE * 2);
+	this.name = name;
+	this.width = width;
+	this.depth = depth;
+	this.x = x;
+	this.y = y;
+	this.visible = false;
+	this.customHighlight = customHighlight;
+	this.data = new Array(width);
+	this.bottomIsZero = bottomIsZero;
+	if (bottomIsZero) this.data.fill(0);
+	else this.data.fill(-1);
+	
+	this.draw = function(mx, my) {
+		var ths = this.y + fs + SIZE;
+		if (!this.visible) return ths + SIZE * this.depth + SIZE;
+		grafx.fillStyle = FGCOLOR;
+		grafx.strokeStyle = FGCOLOR;
+		grafx.font = fs + "px Courier";
+		grafx.fillText(this.name, this.x, this.y + fs);
+		
+		var ths = this.y + fs + SIZE;
+		var v = parseInt(document.getElementById("scrollBar").value);
+		v = v == 0 ? 0 : v - 1;
+		var w = Math.floor(canvas.width / SIZE) + 2;
+		
+		for (var x = v; x < v + w; x++) {
+			for (var y = 0; y < this.depth; y++) {
+				grafx.fillStyle = "white";
+				if (this.depth - this.data[x] - 1 == y)
+					grafx.fillRect(this.x + x * SIZE, ths + y * SIZE, SIZE, SIZE);
+				grafx.strokeRect(this.x + x * SIZE, ths + y * SIZE, SIZE, SIZE);
+			}
+		}
+		
+		if (mouse.x >= canvas.width || mouse.y >= canvas.height)
+			return;
+		
+		if (mx != undefined && my != undefined) {
+			if (this.isInside(mx, my)) {
+				var rmx = mx;
+				var rmy = my;
+				grafx.fillStyle = "red";
+				grafx.strokeStyle = FGCOLOR;
+				mx = Math.floor(mx / SIZE) * SIZE;
+				my = Math.floor(my / SIZE) * SIZE;
+				grafx.fillRect(mx, my, SIZE, SIZE);
+				grafx.strokeRect(mx, my, SIZE, SIZE);
+				
+				grafx.globalAlpha = 0.3;
+				grafx.fillStyle = "red";
+				grafx.fillRect(mx, 0, SIZE, canvas.height);
+				grafx.globalAlpha = 1;
+				
+				pos = rmx;
+				pos -= this.x;
+				pos = Math.floor(pos / SIZE);
+				my -= this.y + fs + SIZE;
+				my = Math.floor(my / SIZE);
+				var val = this.depth - my - 1;
+				var str;
+				if (customHighlight != undefined)
+					str = pos + "(" + customHighlight[val] + ")";
+				else
+					str = pos + "(" + val + ")";
+					
+				var w = (fs * str.length) / 2 + fs;
+				if (mouse.x < canvas.width / 2) {
+					grafx.strokeStyle = "black";
+					grafx.fillStyle = "white";
+					grafx.fillRect(rmx + SIZE, rmy, w, fs * 1.5);
+					grafx.strokeRect(rmx + SIZE, rmy, w, fs * 1.5);
+					grafx.fillStyle = "green";
+					grafx.fillText(str, rmx + SIZE, rmy + fs);
+				} else {
+					grafx.strokeStyle = "black";
+					grafx.fillStyle = "white";
+					grafx.fillRect(rmx - SIZE - w, rmy, w, fs * 1.5);
+					grafx.strokeRect(rmx - SIZE - w, rmy, w, fs * 1.5);
+					grafx.fillStyle = "green";
+					grafx.fillText(str, rmx - SIZE - w, rmy + fs);
+				}
+			}
+		}
+		return ths + SIZE * this.depth + SIZE;
+	}
+	
+	this.click = function(mx, my, deletionMode) {
+		if (this.isInside(mx, my)) {
+			my -= this.y + fs + SIZE;
+			mx -= this.x;
+			mx = Math.floor(mx / SIZE);
+			my = Math.floor(my / SIZE);
+			var pos = mx;
+			var val = this.depth - my - 1;
+			if (!deletionMode) {
+				this.data[pos] = val;
+			} else {
+				this.data[pos] = bottomIsZero ? 0 : -1;
+			}
+		}
+	}
+	
+	this.isInside = function(x, y) {
+		if (!this.visible) return false;
+		var ths = this.y + fs + SIZE;
+		if (y < ths) return false;
+		if (y >= ths + SIZE * this.depth) return false;
+		if (x < this.x) return false;
+		if (x > this.x + SIZE * this.width - 1) return false;
+		return true;
+	}
+}
+
+function playToneIndex(i) {
+	if (composers[0].data[i] >= 0) {
+		var f = FREQUENCIES[composers[0].data[i]];
+		f += 12 * composers[1].data[i];
+		playTone(BEATS / 1000, 0.05, f);
+	}
+	setTimeout(function() {
+		playToneIndex(i + 1);
+	}, BEATS);
+}
+function previewChannel() {
+	if (composers[0].visible == true) {
+		playToneIndex(0);
+	}
+}
+
+var composers = new Array(9);
+var customHighlight = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"];
+var y = 0;
+var m = 0;
+composers[m] = new Composer("Note (Channel A)", 0, y, NOTES, 12, false, customHighlight);
+y = composers[m++].draw();
+composers[m] = new Composer("Octave (Channel A)", 0, y, NOTES, 7, true);
+y = composers[m++].draw();
+composers[m] = new Composer("Sustain (Channel A)", 0, y, NOTES, 1, false, ["True"]);
+y = composers[m++].draw();
+
+y = 0;
+composers[m] = new Composer("Note (Channel B)", 0, y, NOTES, 12, false, customHighlight);
+y = composers[m++].draw();
+composers[m] = new Composer("Octave (Channel B)", 0, y, NOTES, 7, true);
+y = composers[m++].draw();
+composers[m] = new Composer("Sustain (Channel B)", 0, y, NOTES, 1, false, ["True"]);
+y = composers[m++].draw();
+
+y = 0;
+composers[m] = new Composer("Note (Channel C)", 0, y, NOTES, 12, false, customHighlight);
+y = composers[m++].draw();
+composers[m] = new Composer("Octave (Channel C)", 0, y, NOTES, 7, true);
+y = composers[m++].draw();
+composers[m] = new Composer("Sustain (Channel C)", 0, y, NOTES, 1, false, ["True"]);
+y = composers[m++].draw();
+
+y = 0;
+composers[m] = new Composer("Generator", 0, y, NOTES, 5, false, ["Very Low", "Low", "Medium", "High", "Very High"]);
+y = composers[m++].draw();
+composers[m] = new Composer("Sustain", 0, y, NOTES, 1, false, ["True"]);
+y = composers[m++].draw();
+
+tabs[0].click();
+
+var ptime = document.getElementById("time").value;
+function refresh() {
+	grafx.fillStyle = BGCOLOR;
+	grafx.fillRect(0, 0, canvas.width, canvas.height);
+	for (var i = composers.length - 1; i >= 0; i--)
+		composers[i].draw(mouse.x, mouse.y);
+		
+	if (mouse.isDown && mouse.x < canvas.width && mouse.y < canvas.height) {
+		for (var i = 0; i < composers.length; i++) {
+			if (keyboard[16]) {
+				composers[i].click(mouse.x, mouse.y, true);
+			} else {
+				composers[i].click(mouse.x, mouse.y, false);
+			}
+		}
+	}
+	var ntime = document.getElementById("time").value;
+	if (ntime != ptime) {
+		updateTime(2);
+	}
+	ptime = ntime;
+}
+
+setInterval(refresh, 1);
+
+document.body.onmousemove = function(e) {
+	var rect = canvas.getBoundingClientRect();
+	var mx = e.clientX - rect.left;
+	var my = e.clientY - rect.top;	
+	mouse.x = mx;
+	mouse.y = my;
+}
+
+document.body.onmousedown = function(e) {
+	mouse.isDown = true;
+}
+
+document.body.onmouseup = function(e) {
+	mouse.isDown = false;
+}
+
+document.body.onkeydown = function(e) {
+	keyboard[e.keyCode] = true;
+}
+
+document.body.onkeyup = function(e) {
+	keyboard[e.keyCode] = false;
+	if (e.keyCode == 20) {
+		previewChannel();
+	}
+}
+
+function updateScroll() {
+	var val = parseInt(document.getElementById("scrollBar").value);
+	for (var i = 0; i < composers.length; i++) {
+		composers[i].x = -SIZE * val;
+	}
+}
+document.getElementById("scrollBar").onmousemove = function(e) {
+	updateScroll();
+}
+document.getElementById("scrollBar").onchange = function(e) {
+	updateScroll();
+}
+
+function updateTime(e) {
+
+
+	var t0 = document.getElementById("t0");
+	var t1 = document.getElementById("t1");
+	var t2 = document.getElementById("t2");
+	var pt0 = document.getElementById("pt0");
+	var pt1 = document.getElementById("pt1");
+	var pt2 = document.getElementById("pt2");
+	var t0val = parseInt(t0.value);
+	var t1val = parseInt(t1.value);
+	var t2val = parseInt(t2.value);
+	var time = parseInt(document.getElementById("time").value);
+	t0val = t0val > time ? time : t0val;
+	t1val = t1val > time ? time : t1val;
+	t2val = t2val > time ? time : t2val;
+	t0val = t0val < 0 ? 0 : t0val;
+	t1val = t1val < 0 ? 0 : t1val;
+	t2val = t2val < 0 ? 0 : t2val;
+	
+	t0.setAttribute("max", time);
+	t1.setAttribute("max", time);
+	t2.setAttribute("max", time);
+	
+	
+	if (t0val + t1val + t2val < time) {
+		t1val = time - t0val - t2val;
+		if (t1val < 0) {
+			if (e == 0) t0val = -t1val;
+			else t2val = -t1val;
+			t1val = 0;
+		}
+	} else if (t0val + t1val + t2val > time) {
+		t1val = time - t0val - t2val;
+		if (t1val < 0) {
+			if (e == 0) t2val = time - t0val;
+			else if (e == 2) t0val = time - t2val;
+			t1val = 0;
+		}
+	}
+	
+	pt0.innerHTML = t0val;
+	pt1.innerHTML = t1val;
+	pt2.innerHTML = t2val;
+	t0.value = t0val;
+	t1.value = t1val;
+	t2.value = t2val;
+	
+	
+}
+
+document.getElementById("t0").onmousemove = function(e) {
+	updateTime(0);
+}
+document.getElementById("t0").onchange = function(e) {
+	updateTime(0);
+}
+
+document.getElementById("t2").onmousemove = function(e) {
+	updateTime(2);
+}
+document.getElementById("t2").onchange = function(e) {
+	updateTime(2);
+}
+
+var numberBoxes = document.getElementsByTagName("input");
+for (var i = 0; i < numberBoxes.length; i++) {
+	if (numberBoxes[i].type == "number") {
+		var bl = numberBoxes[i];
+		bl.style.textAlign = "center";
+		bl.onkeyup = function() {
+			var val = parseInt(this.value);
+			var min = parseInt(this.getAttribute("min"));
+			var max = parseInt(this.getAttribute("max"));
+	
+			if (isNaN(val) || val == undefined) val = 0;
+			if (val < min) val = min;
+			if (val > max) val = max;
+	
+			this.value = val;
+		}
+	}
+}
+
+function replaceAll(str, a, b) {
+	while (str.replace(a, b) != str) {
+		str = str.replace(a, b);
+	}
+	return str;
+}
+
+btnSave.onclick = function() {
+	save();
+}
+
+function save() {
+	var out = new Array(composers.length);
+	for (var i = 0; i < composers.length; i++) {
+		out[i] = composers[i].data;
+	}
+	var a = document.createElement("a");
+	var txt = JSON.stringify(out);
+	var file = new Blob([txt], {type: "UTF-8"});
+	a.href = URL.createObjectURL(file);
+	a.download = prompt("File name") + ".ayp";
+	a.style.display = "none";
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
+}
+
+btnLoad.onclick = function() {
+	open();
+}
+
+function open() {
+	var input = document.createElement("input");
+	input.style = "display:none";
+	input.setAttribute("type", "file");
+	input.setAttribute("accept", ".ayp");
+	document.body.appendChild(input);
+	input.click();
+	input.onchange = function() {
+		var file = input.files[0];
+		var fileReader = new FileReader();
+		fileReader.onload = function(e) {
+			var txt = e.target.result;
+			var out = JSON.parse(txt);
+			for (var i = 0; i < composers.length; i++) {
+				for (var j = 0; j < Math.min(NOTES, out[i].length); j++) {
+					if (out[i][j] == -1 && composers[i].bottomIsZero)
+						composers[i].data[j] = 0;
+					else
+						composers[i].data[j] = out[i][j];
+				}
+			}
+		}
+		fileReader.readAsText(file, "UTF-8");
+		document.body.removeChild(this);
+	}
+}
+
+btnNew.onclick = function() {
+	if (confirm("Are you sure you want to start a new project?")) {
+		window.location.reload();
+	}
+}
+
+function hexCommand(cmd, input) {
+	if (cmd == "delay") {
+		return "2" + input;
+	} else if (cmd == "tone") {
+		return "1" + input;
+	}
+}
+
+function intToHex(i, k) {
+	if (k == undefined) k = 1;
+	i = i.toString(16).toUpperCase();
+	while (i.length < k) i = "0" + i;
+	return i;
+}
+
+function exportBinary(hex) {
+	var buffer = new Int8Array(hex.length / 2);
+	for (var i = 0; i < hex.length; i += 2) {
+		buffer[i / 2] = parseInt(hex.substr(i, 2), 16);
+	}
+	var file = new Blob([buffer], {type: "octet/stream"});
+	var a = document.createElement("a");
+	a.href = URL.createObjectURL(file);
+	a.download = "MUSIC.HEX";
+	a.style.display = "none";
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
+}
+
+btnExport.onclick = function() {
+	var noiseChannels = new Array(3);
+	noiseChannels[0] = document.getElementById("noiseA").checked;
+	noiseChannels[1] = document.getElementById("noiseB").checked;
+	noiseChannels[2] = document.getElementById("noiseC").checked;
+	
+	var time = parseInt(document.getElementById("time").value);
+	var t0 = parseInt(document.getElementById("t0").value);
+	var t1 = parseInt(document.getElementById("t1").value);
+	var t2 = parseInt(document.getElementById("t2").value);
+	var timeout0 = intToHex(t0, 3);
+	var timeout1 = intToHex(t1, 3);
+	var timeout2 = intToHex(t2, 3);
+	var vol = new Array(3);
+	vol[0] = intToHex(parseInt(document.getElementById("volA").value), 1);
+	vol[1] = intToHex(parseInt(document.getElementById("volB").value), 1);
+	vol[2] = intToHex(parseInt(document.getElementById("volC").value), 1);
+	
+	var noiseMixer = 32 + 16 + 8; //4 + 2 + 1
+	if (noiseChannels[0]) {
+		noiseMixer -= 8;
+		noiseMixer += 1;
+	}
+	if (noiseChannels[1]) {
+		noiseMixer -= 16;
+		noiseMixer += 2;
+	}
+	if (noiseChannels[2]) {
+		noiseMixer -= 32;
+		noiseMixer += 4;
+	}
+	
+	var output = "07" + intToHex(noiseMixer, 2);
+	var cpc = 3; //Composers per channel.
+	
+	var lastNote = -1;
+	for (var j = 0; j < 4; j++) {
+		for (var i = NOTES - 1; i >= 0; i--) 
+			if (composers[j * cpc].data[i] != -1)
+				break;
+		if (i > lastNote) lastNote = i;
+	}
+	
+	for (var i = 0; i <= lastNote; i++) {
+		if (i == 128) timeout1 = intToHex(40, 3);
+		//0
+		for (var j = 0; j < 3; j++) {
+			if (noiseChannels[j]) continue;
+			var note = intToHex(composers[j * cpc].data[i], 1);
+			if (note == "-1") continue;
+			var notePrev = i == 0 ? undefined : intToHex(composers[j * cpc].data[i - 1]);
+			var sustainPrev = i == 0 ? undefined : intToHex(composers[j * cpc + 2].data[i - 1]);
+			var octave = intToHex(composers[j * cpc + 1].data[i], 1);
+			var sustain = composers[j * cpc + 2].data[i];
+			if (sustain == -1) {
+				output += "1" + j + octave + note;
+				output += intToHex(j + 8, 2) + "0" + vol[j];
+			} else if (note != notePrev || (note == notePrev && sustainPrev == -1)) {
+				output += "1" + j + octave + note;
+				output += intToHex(j + 8, 2) + "0" + vol[j];
+			}
+		}
+		//Handle noise...
+		var note = intToHex(composers[3 * cpc].data[i], 1);
+		var noise = 0;
+		if (composers[3 * cpc].data[i] == 0) noise = 31;
+		if (composers[3 * cpc].data[i] == 1) noise = 23;
+		if (composers[3 * cpc].data[i] == 2) noise = 15;
+		if (composers[3 * cpc].data[i] == 3) noise = 7;
+		if (composers[3 * cpc].data[i] == 4) noise = 0;
+		noise = intToHex(noise, 2);
+		
+		if (note != "-1") {
+			var notePrev = i == 0 ? undefined : intToHex(composers[3 * cpc].data[i - 1]);
+			var sustainPrev = i == 0 ? undefined : intToHex(composers[3 * cpc + 1].data[i - 1]);
+			var sustain = composers[3 * cpc + 1].data[i];
+			if (sustain == -1) {
+				output += "06" + noise;
+				for (var j = 0; j < 3; j++) {
+					if (noiseChannels[j]) {
+						output += intToHex(j + 8, 2) + "0" + vol[j];
+					}
+				}
+			} else if (note != notePrev || (note == notePrev && sustainPrev == -1)) {
+				output += "06" + noise;
+				for (var j = 0; j < 3; j++) {
+					if (noiseChannels[j]) {
+						output += intToHex(j + 8, 2) + "0" + vol[j];
+					}
+				}
+			}
+		}
+		
+		output += "2" + timeout0;
+		
+
+		//t0+t1
+		//Noise...
+		var note = intToHex(composers[3 * cpc].data[i], 1);
+		if (note != "-1") {
+			var sustain = composers[3 * cpc + 1].data[i];
+			if (sustain == -1) {
+				for (var j = 0; j < 3; j++) {
+					if (noiseChannels[j]) {
+						output += intToHex(j + 8, 2) + "00";
+					}
+				}
+			}
+		}
+		
+		
+		output += "2" + timeout1;
+		
+		//t0+t1
+		for (var j = 0; j < 3; j++) {
+			if (noiseChannels[j]) continue;
+			var note = intToHex(composers[j * cpc].data[i], 1);
+			if (note == "-1") continue;
+			var sustain = composers[j * cpc + 2].data[i];
+			if (sustain == -1) {
+				output += intToHex(j + 8, 2) + "00";
+			}
+		}
+		output += "2" + timeout2;
+		
+		//t0+t1+t2
+		for (var j = 0; j < 3; j++) {
+			if (noiseChannels[j]) continue;
+			var note = intToHex(composers[j * cpc].data[i], 1);
+			var noteNext = i == NOTES - 1 ? undefined : intToHex(composers[j * cpc].data[i + 1]);
+			if (note == "-1") continue;
+			var sustain = composers[j * cpc + 2].data[i];
+			if (sustain == 0 && (noteNext != note)) {
+				output += intToHex(j + 8, 2) + "00";
+			}
+		}
+		//Noise...
+		var note = intToHex(composers[3 * cpc].data[i], 1);
+		var noteNext = i == NOTES - 1 ? undefined : intToHex(composers[cpc * 3].data[i + 1]);
+		if (note != "-1") {
+			var sustain = composers[3 * cpc + 1].data[i];
+			if (sustain == 0 && (noteNext != note)) {
+				for (var j = 0; j < 3; j++) {
+					if (noiseChannels[j]) {
+						output += intToHex(j + 8, 2) + "00";
+					}
+				}
+			}
+		}
+	}
+	console.log(output);
+	exportBinary(output);
+}
+
+document.getElementById("noiseA").onchange = function() {
+	document.getElementById("noiseB").checked = false;
+	document.getElementById("noiseC").checked = false;
+}
+
+document.getElementById("noiseB").onchange = function() {
+	document.getElementById("noiseA").checked = false;
+	document.getElementById("noiseC").checked = false;
+}
+
+document.getElementById("noiseC").onchange = function() {
+	document.getElementById("noiseA").checked = false;
+	document.getElementById("noiseB").checked = false;
+}
+</script>
+</body>
